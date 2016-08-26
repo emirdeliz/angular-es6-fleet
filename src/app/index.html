@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="FleetApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Frotas Veículos</title>
+
+</head>
+<body ng-controller="FleetController as ctrl">
+	<div class="main-page">
+		<header class="header">
+			<div class="logo"></div>
+		</header>
+		<div class="content">
+			<a class="button-add" href="#openModal">Novo Carro</a>
+
+			<div class="search-box">
+				<input type="text" placeholder="Combustível ou marca" ng-model="query" ng-keyup="ctrl.filterVehicle();"/>
+				<img class="icon-box" alt="Buscar"/>
+			</div>
+			<table class="table-view">
+				<thead>
+					<tr>
+						<th>
+							<div class="checkbox">
+								<div ng-click="ctrl.markAllVehicle()">
+									<label ng-class="{'checked' : selectAll}"></label>
+								</div>
+							</div>
+						</th>
+						<th>Placa</th>
+						<th>Modelo</th>
+						<th>Marca</th>
+						<th>Foto</th>
+						<th>Combustivel</th>
+						<th>Valor</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="vehicle in vehicles | limitTo:5">
+						<td>
+							<div class="checkbox">
+								<div ng-click="ctrl.markVehicle(vehicle);" ng-init="vehicle.selected = false">
+									<label ng-class="{'checked' : vehicle.selected}"></label>
+								</div>
+							</div>
+						</td>
+						<td>{{vehicle.plate}}</td>
+						<td>{{vehicle.model}}</td>
+						<td>{{vehicle.brand}}</td>
+						<td>
+							<a href="{{vehicle.image}}" ng-disabled="!vehicle.image" ng-class="{'link-image' : vehicle.image, 'link-image-disabled' : !vehicle.image}">
+								{{vehicle.image?'Imagem':'Sem foto'}}
+							</a>
+						</td>
+						<td>{{vehicle.fuel}}</td>
+						<td>{{vehicle.value | currency : 'R$'}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="container-pagination">
+			<div class="pagination">
+				<div ng-click="ctrl.prevPage()" ng-class="{'disabled': currentPage < 1}"></div>
+				<div ng-repeat="index in ctrl.getNumPages()" ng-class="{'selected-page': currentPage == index}" ng-click="ctrl.showVehicle(index)">{{index +1}}</div>
+				<div ng-click="ctrl.nextPage()" ng-class="{'disabled': (currentPage +1) == ctrl.getNumPages().length}"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="openModal" class="modal-dialog">
+		<div>
+			<div class="content">
+				<a href="#close" title="Close" class="close">x</a>
+				<h2>Novo Veículo</h2>
+				<div>
+					<form name="userForm" novalidate>
+						<div class="form-group">
+							<label class="label-required">Placa</label>
+							<input type="text" value="" class="form-control" ng-model="vehicle.plate" required>
+						</div>
+						<div class="form-group">
+							<label class="label-required">Modelo</label>
+							<input type="text" value="" class="form-control" ng-model="vehicle.model" required>
+						</div>
+						<div class="form-group">
+							<label class="label-required">Marca</label>
+							<input type="text" value="" class="form-control" ng-model="vehicle.brand" required>
+						</div>
+						<div class="form-group">
+							<label>Foto</label>
+							<file-upload-directive fileread="vehicle.image"/>
+						</div>
+						<div class="form-group">
+							<label>Combústivel</label>
+							<select class="form-control" ng-model="vehicle.fuel">
+								<option value=""></option>
+								<option value="gasolina">Gasolina</option>
+								<option value="alcool">Alcool</option>
+								<option value="flex">Flex</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Valor</label>
+							<input type="text" value="" class="form-control" ng-model="vehicle.value" ui-number-mask="2">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="container-button">
+				<a class="button-save" href="#close" ng-click="ctrl.addVehicle();" ng-disabled="!userForm.$valid">Salvar</a>
+				<a class="button-cancel" href="#close">Cancelar</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
